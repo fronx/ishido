@@ -27,6 +27,15 @@ var Board = function () {
     board.y_num = board.y_max = 8;
     board.x_num = board.x_max = 12;
 
+    board.start_positions =
+        [ { x: board.x_min,         y: board.y_min         }
+        , { x: board.x_max,         y: board.y_min         }
+        , { x: board.x_min,         y: board.y_max         }
+        , { x: board.x_max,         y: board.y_max         }
+        , { x: board.x_max / 2,     y: board.y_max / 2     }
+        , { x: board.x_max / 2 + 1, y: board.y_max / 2 + 1 }
+        ];
+
     var n_fields = board.y_num * board.x_num;
 
     function flatten_xy (x, y) {
@@ -128,10 +137,9 @@ var Game = function () {
         board.set(x, y, piece);
     }
     function put_initial_pieces () {
-        put(board.x_min, board.y_min, pieces.shift());
-        put(board.x_max, board.y_min, pieces.shift());
-        put(board.x_min, board.y_max, pieces.shift());
-        put(board.x_max, board.y_max, pieces.shift());
+        board.start_positions.forEach(function (point) {
+            put(point.x, point.y, pieces.shift());
+        });
     }
 
     function matching(piece, neighbours) {
