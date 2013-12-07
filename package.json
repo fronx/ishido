@@ -1,0 +1,23 @@
+{
+  "name": "ishido",
+  "version": "0.0.0",
+  "description": "ishido ======",
+  "main": "ishido.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/fronx/ishido.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/fronx/ishido/issues"
+  },
+  "homepage": "https://github.com/fronx/ishido",
+  "dependencies": {
+    "colors": "~0.6.2",
+    "promise": "~3.2.0"
+  }
+}
