@@ -136,6 +136,7 @@ var Game = function () {
         turns.push([ x, y, piece ]);
         board.set(x, y, piece);
     }
+
     function put_initial_pieces () {
         board.start_positions.forEach(function (point) {
             put(point.x, point.y, pieces.shift());
@@ -153,13 +154,18 @@ var Game = function () {
                matching(piece, board.neighbours(x, y));
     }
 
+    function turn () {
+        return turns.length - board.start_positions.length + 1;
+    }
+
     game.completed = function () {
         return (pieces.length == 0);
     }
+
     game.next = function (fn) {
         var promise = new Promise(function (resolve, reject) {
             var piece = pieces.shift();
-            fn(piece, board). // must return a promise
+            fn(turn(), piece, board). // must return a promise
                 then(function (placing) {
                     var x = placing.x;
                     var y = placing.y;
@@ -204,8 +210,8 @@ var loop = function (game) {
     }
 }
 
-var user_turn = function (piece, board) {
-    process.stdout.write("\n");
+var user_turn = function (n_turn, piece, board) {
+    process.stdout.write("\n== turn " + n_turn + " ==\n\n");
     board.draw();
     console.log("\ncurrent piece: " + piece.toString());
     return ask('x,y: ').then(function (input_string) {
