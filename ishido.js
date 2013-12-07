@@ -3,16 +3,25 @@ var Promise = require('promise');
 var readline = require('readline');
 
 var Piece = function (color, symbol) {
-    this.color = color;
-    this.symbol = symbol;
+    var piece = this;
+    piece.color = color;
+    piece.symbol = symbol;
 
-    this.toString = function () {
-        return this.symbol[this.color];
+    piece.toString = function () {
+        return piece.symbol[piece.color];
+    }
+
+    piece.match_color = function (other) {
+        return (other.color == piece.color);
+    }
+
+    piece.match_symbol = function (other) {
+        return (other.symbol == piece.symbol);
     }
 }
 
 var Board = function () {
-    board = this;
+    var board = this;
     board.cells = [];
     board.y_min = board.x_min = 1;
     board.y_num = board.y_max = 8;
@@ -33,6 +42,10 @@ var Board = function () {
             return board.cells[flatten_xy(x, y)]
         else
             return null;
+    }
+
+    board.free = function (x, y) {
+        return (!(board.at(x, y) instanceof Piece));
     }
 
     board.set = function (x, y, value) {
@@ -121,17 +134,15 @@ var Game = function () {
         put(board.x_max, board.y_max, pieces.shift());
     }
 
-    function free (x, y) {
-        return (!(board.at(x, y) instanceof Piece));
+    function matching(piece, neighbours) {
+        // TODO
+        return true;
     }
-    function verify_placing (x, y, piece) {
-        var valid = true;
-        board.neighbours(x, y).forEach(function (neighbour) {
-            // TODO
-        })
-        valid = valid && board.valid_xy(x, y)
-                      && free(x,y);
-        return valid;
+
+    function valid_placing (x, y, piece) {
+        return board.valid_xy(x, y) &&
+               board.free(x, y) &&
+               matching(piece, board.neighbours(x, y));
     }
 
     game.completed = function () {
@@ -144,7 +155,7 @@ var Game = function () {
                 then(function (placing) {
                     var x = placing.x;
                     var y = placing.y;
-                    if (verify_placing(x, y, piece)) {
+                    if (valid_placing(x, y, piece)) {
                         put(x, y, piece);
                         resolve(game);
                     } else {
