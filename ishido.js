@@ -11,10 +11,12 @@ var Piece = function (color, symbol) {
         return piece.symbol[piece.color];
     }
 
+    // piece.match_color :: Piece -> Boolean
     piece.match_color = function (other) {
         return (other.color == piece.color);
     }
 
+    // piece.match_symbol :: Piece -> Boolean
     piece.match_symbol = function (other) {
         return (other.symbol == piece.symbol);
     }
@@ -61,7 +63,8 @@ var Board = function () {
         board.cells[flatten_xy(x, y)] = value;
     }
 
-    board.draw = function () {
+
+    board.cli_draw = function () {
         var empty_cell_string = '☐';
         for (i = 0; i < n_fields; i++) {
             if ((i > 0) && (i % board.x_num == 0)) process.stdout.write("\n");
@@ -220,7 +223,7 @@ function cli_ask (question) {
 // cli_user_turn :: Int -> Piece -> Board -> Promise Point
 function cli_user_turn (n_turn, piece, board) {
     process.stdout.write("\n== turn " + n_turn + " ==\n\n");
-    board.draw();
+    board.cli_draw();
     console.log("\ncurrent piece: " + piece.toString());
     return cli_ask('x,y: ').then(function (input_string) {
         xy = input_string.split(/\s*,\s*/);
