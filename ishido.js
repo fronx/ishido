@@ -162,15 +162,15 @@ var Game = function () {
         return (pieces.length == 0);
     }
 
+    // game.next :: (Int -> Piece -> Board -> Promise Point)
+    //           -> Promise Game
     game.next = function (fn) {
-        var promise = new Promise(function (resolve, reject) {
+        return new Promise(function (resolve, reject) {
             var piece = pieces.shift();
-            fn(turn(), piece, board). // must return a promise
-                then(function (placing) {
-                    var x = placing.x;
-                    var y = placing.y;
-                    if (valid_placing(x, y, piece)) {
-                        put(x, y, piece);
+            fn(turn(), piece, board).
+                then(function (point) {
+                    if (valid_placing(point.x, point.y, piece)) {
+                        put(point.x, point.y, piece);
                         resolve(game);
                     } else {
                         pieces.unshift(piece);
@@ -178,43 +178,51 @@ var Game = function () {
                     }
                 });
         });
-        return promise;
+    }
+
+    // game.loop :: (Int -> Piece -> Board -> Promise Point)
+    //           -> (String -> Void)
+    //           -> Promise Game
+    game.loop = function (user_turn, fn_error) {
+        if (!game.completed()) {
+            return game.next(user_turn).then(
+                function (game) {
+                    return game.loop(user_turn, fn_error);
+                },
+                function (message) {
+                    fn_error(message);
+                    return game.loop(user_turn, fn_error);
+                });
+        } else {
+            return Promise.of(game);
+        }
     }
 
     put_initial_pieces();
 }
 
-var ask = function (prompt) {
+
+// cli_ask :: String -> Promise String
+function cli_ask (question) {
     var rl = readline.createInterface({
         input:  process.stdin,
         output: process.stdout
     });
-    var promise = new Promise(function (resolve, reject) {
-        rl.question(prompt, function (answer) {
+    return new Promise(function (resolve, reject) {
+        rl.question(question, function (answer) {
             rl.close();
             resolve(answer);
         });
 
     });
-    return promise;
 }
 
-var loop = function (game) {
-    if (!game.completed()) {
-        return game.next(user_turn).then(loop, function (message) {
-            console.log(message);
-            loop(game);
-        });
-    } else {
-        console.log('completed');
-    }
-}
-
-var user_turn = function (n_turn, piece, board) {
+// cli_user_turn :: Int -> Piece -> Board -> Promise Point
+function cli_user_turn (n_turn, piece, board) {
     process.stdout.write("\n== turn " + n_turn + " ==\n\n");
     board.draw();
     console.log("\ncurrent piece: " + piece.toString());
-    return ask('x,y: ').then(function (input_string) {
+    return cli_ask('x,y: ').then(function (input_string) {
         xy = input_string.split(/\s*,\s*/);
         return { x: parseInt(xy[0])
                , y: parseInt(xy[1])
@@ -222,11 +230,14 @@ var user_turn = function (n_turn, piece, board) {
     });
 }
 
-var main = function () {
+function main () {
     game = new Game;
-    loop(game);
+    game.loop(cli_user_turn, console.log);
 }
 
 if (require.main === module) {
     main();
+} else {
+    module.exports.Board = Board;
+    module.exports.Game  = Game;
 }
