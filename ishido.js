@@ -162,6 +162,7 @@ var Game = function () {
     }
 
     game.completed = function () {
+        // TODO !or no more valid moves!
         return (pieces.length == 0);
     }
 
@@ -197,7 +198,9 @@ var Game = function () {
                     return game.loop(user_turn, fn_error);
                 });
         } else {
-            return Promise.of(game);
+            return new Promise(function (resolve, reject) {
+                resolve(game);
+            });
         }
     }
 
@@ -234,8 +237,11 @@ function cli_user_turn (n_turn, piece, board) {
 }
 
 function main () {
-    game = new Game;
-    game.loop(cli_user_turn, console.log);
+    (new Game)
+        .loop(cli_user_turn, console.log)
+        .then(function (game) {
+            console.log("COMPLETED");
+        });
 }
 
 if (require.main === module) {
