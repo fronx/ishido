@@ -4,7 +4,8 @@
   "description": "ishido ======",
   "main": "ishido.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "npm install && ./bin/ishido_cli.js",
+    "test": "node_modules/tape/bin/tape test/*.js"
   },
   "repository": {
     "type": "git",
@@ -21,6 +22,10 @@
     "promise": "~3.2.0"
   },
   "devDependencies": {
-    "tape": "~2.3.0"
+    "tape": "~2.3.0",
+    "testling": "~1.5.3"
+  },
+  "testling": {
+    "files": "test/test_*.js"
   }
 }

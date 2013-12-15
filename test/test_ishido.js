@@ -1,8 +1,8 @@
 var test    = require('tape');
 var Promise = require('promise');
-var Game    = require('./src/game');
-var Piece   = require('./src/piece');
-var Matches = require('./src/matches');
+var Game    = require('../src/game');
+var Piece   = require('../src/piece');
+var Matches = require('../src/matches');
 
 function nothing () {}
 function rand_between (a, b) {
