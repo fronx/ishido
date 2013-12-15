@@ -1,9 +1,6 @@
 require('colors');
-var Promise  = require('promise');
 var readline = require('readline')
-var Piece    = require('./piece');
-var TileSet  = require('./tile_set');
-var Game     = require('./game');
+var ishido   = require('./ishido');
 
 function Cli () {
     function print (x) {
@@ -46,7 +43,7 @@ function Cli () {
     var empty_cell_char = '☐';
 
     function piece_as_char (piece) {
-        if (piece instanceof Piece)
+        if (piece instanceof ishido.Piece)
             // implicitly depends on package 'colors'
             return piece.symbol[piece.color]
         else
@@ -59,7 +56,7 @@ function Cli () {
             input:  process.stdin,
             output: process.stdout
         });
-        return new Promise(function (resolve, reject) {
+        return new ishido.Promise(function (resolve, reject) {
             rl.question(question, function (answer) {
                 rl.close();
                 resolve(answer);
@@ -86,7 +83,7 @@ function Cli () {
     }
 
     var cli_tile_set =
-        new TileSet(
+        new ishido.TileSet(
             [ 'blue'
             , 'cyan'
             , 'green'
@@ -102,7 +99,7 @@ function Cli () {
             , 'f'
             ]
         );
-    var cli_game = new Game(cli_tile_set);
+    var cli_game = new ishido.Game(cli_tile_set);
     var cli_error = console.log;
 
     function cli_play () {
