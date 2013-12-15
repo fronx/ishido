@@ -1,4 +1,4 @@
 if (require.main === module) {
-    var cli = require('./src/cli')
+    var cli = require('./src/cli');
     cli().play();
 };
