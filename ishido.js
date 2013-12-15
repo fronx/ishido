@@ -45,7 +45,7 @@ function Board () {
         , { x: board.x_max / 2 + 1, y: board.y_max / 2 + 1 }
         ];
 
-    var n_fields = board.y_num * board.x_num;
+    board.n_fields = board.y_num * board.x_num;
 
     function flatten_xy (x, y) {
         return (y - board.y_min) * board.x_num + (x - board.x_min);
@@ -68,44 +68,6 @@ function Board () {
 
     board.set = function (x, y, value) {
         board.cells[flatten_xy(x, y)] = value;
-    }
-
-    // implicitly depends on package 'colors'
-    board.cli_draw = function () {
-        function draw_num_cell (num) {
-            if (num < 10)
-                process.stdout.write(' ' + num + ' ')
-            else
-                process.stdout.write('' + num + ' ');
-        }
-
-        function draw_char_cell (char) {
-            process.stdout.write(' ' + char + ' ');
-        }
-
-        function draw_x_axis () {
-            process.stdout.write('   '); // leave room for the y axis
-            for (var x = 1; x <= board.x_max; x++)
-                draw_num_cell(x);
-            process.stdout.write("\n");
-        }
-
-        var empty_cell_char = '☐';
-        draw_x_axis();
-
-        for (var i = 0; i < n_fields; i++) {
-            if (i % board.x_num == 0) {
-                if (i > 0) process.stdout.write("\n"); // end of row
-                // y-axis
-                var y = (i / board.x_num) + 1;
-                draw_num_cell(y);
-            }
-            if (board.cells[i] instanceof Piece)
-                draw_char_cell(board.cells[i].toString())
-            else
-                draw_char_cell(empty_cell_char);
-        }
-        process.stdout.write("\n");
     }
 
     board.neighbours = function (x, y) {
@@ -319,8 +281,50 @@ function Game () {
     put_initial_pieces();
 }
 
+function Cli (dependencies) {
+    // shortcut
+    function print (x) {
+        process.stdout.write(x);
+    };
 
-function main (dependencies) {
+    // implicitly depends on package 'colors'
+    function cli_draw (board) {
+        function draw_num_cell (num) {
+            if (num < 10)
+                print(' ' + num + ' ')
+            else
+                print('' + num + ' ');
+        }
+
+        function draw_char_cell (char) {
+            print(' ' + char + ' ');
+        }
+
+        function draw_x_axis () {
+            print('   '); // leave room for the y axis
+            for (var x = 1; x <= board.x_max; x++)
+                draw_num_cell(x);
+            print("\n");
+        }
+
+        var empty_cell_char = '☐';
+        draw_x_axis();
+
+        for (var i = 0; i < board.n_fields; i++) {
+            if (i % board.x_num == 0) {
+                if (i > 0) print("\n"); // end of row
+                // y-axis
+                var y = (i / board.x_num) + 1;
+                draw_num_cell(y);
+            }
+            if (board.cells[i] instanceof Piece)
+                draw_char_cell(board.cells[i].toString())
+            else
+                draw_char_cell(empty_cell_char);
+        }
+        print("\n");
+    }
+
     // cli_ask :: String -> Promise String
     function cli_ask (question) {
         var rl = dependencies.readline.createInterface({
@@ -338,8 +342,8 @@ function main (dependencies) {
 
     // cli_user_turn :: Int -> Piece -> Board -> Promise Point
     function cli_user_turn (n_turn, piece, board) {
-        process.stdout.write("\n== turn " + n_turn + " ==\n\n");
-        board.cli_draw();
+        print("\n== turn " + n_turn + " ==\n\n");
+        cli_draw(board);
         console.log("\ncurrent piece: " + piece.toString());
         return cli_ask('x,y: ').then(function (input_string) {
             xy = input_string.split(/\s*,\s*/);
@@ -349,11 +353,22 @@ function main (dependencies) {
         });
     }
 
+    function cli_completed (game) {
+        console.log("COMPLETED");
+    };
+
+    return { draw:      cli_draw
+           , ask:       cli_ask
+           , user_turn: cli_user_turn
+           , completed: cli_completed
+           };
+};
+
+function main (dependencies) {
+    var cli = Cli(dependencies);
     (new Game)
-        .loop(cli_user_turn, console.log)
-        .then(function (game) {
-            console.log("COMPLETED");
-        });
+        .loop(cli.user_turn, console.log)
+        .then(cli.completed);
 }
 
 if (require.main === module) {
