@@ -31,15 +31,15 @@ function Cli () {
 
         draw_x_axis();
 
-        for (var i = 0; i < board.n_fields; i++) {
-            if (i % board.x_num == 0) {
-                if (i > 0) print("\n"); // end of row
+        board.each_cell(function (cell, index) {
+            if (index % board.x_num == 0) {
+                if (index > 0) print("\n"); // end of row
                 // y-axis
-                var y = (i / board.x_num) + 1;
+                var y = (index / board.x_num) + 1;
                 draw_num_cell(y);
             }
-            draw_char_cell(piece_as_char(board.cells[i]));
-        }
+            draw_char_cell(piece_as_char(cell));
+        });
         print("\n");
     }
 
