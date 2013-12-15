@@ -1,13 +1,14 @@
+require('colors');
 var Promise = require('promise');
-var Piece = require('./piece');
+var Piece   = require('./piece');
+var TileSet = require('./tile_set');
+var Game    = require('./game');
 
 function Cli (dependencies) {
-    // shortcut
     function print (x) {
         process.stdout.write(x);
     };
 
-    // implicitly depends on package 'colors'
     function cli_draw (board) {
         function draw_num_cell (num) {
             if (num < 10)
@@ -27,7 +28,6 @@ function Cli (dependencies) {
             print("\n");
         }
 
-        var empty_cell_char = '☐';
         draw_x_axis();
 
         for (var i = 0; i < board.n_fields; i++) {
@@ -37,12 +37,19 @@ function Cli (dependencies) {
                 var y = (i / board.x_num) + 1;
                 draw_num_cell(y);
             }
-            if (board.cells[i] instanceof Piece)
-                draw_char_cell(board.cells[i].toString())
-            else
-                draw_char_cell(empty_cell_char);
+            draw_char_cell(piece_as_char(board.cells[i]));
         }
         print("\n");
+    }
+
+    var empty_cell_char = '☐';
+
+    function piece_as_char (piece) {
+        if (piece instanceof Piece)
+            // implicitly depends on package 'colors'
+            return piece.symbol[piece.color]
+        else
+            return empty_cell_char;
     }
 
     // cli_ask :: String -> Promise String
@@ -64,7 +71,7 @@ function Cli (dependencies) {
     function cli_user_turn (n_turn, piece, board) {
         print("\n== turn " + n_turn + " ==\n\n");
         cli_draw(board);
-        print("\ncurrent piece: " + piece.toString() + "\n");
+        print("\ncurrent piece: " + piece_as_char(piece) + "\n");
         return cli_ask('x,y: ').then(function (input_string) {
             xy = input_string.split(/\s*,\s*/);
             return { x: parseInt(xy[0])
@@ -75,12 +82,40 @@ function Cli (dependencies) {
 
     function cli_completed (game) {
         print("COMPLETED\n");
-    };
+    }
+
+    var cli_tile_set =
+        new TileSet(
+            [ 'blue'
+            , 'cyan'
+            , 'green'
+            , 'magenta'
+            , 'red'
+            , 'yellow'
+            ],
+            [ 'a'
+            , 'b'
+            , 'c'
+            , 'd'
+            , 'e'
+            , 'f'
+            ]
+        );
+    var cli_game = new Game(cli_tile_set);
+    var cli_error = console.log;
+
+    function cli_play () {
+        return cli_game
+            .loop(cli_user_turn, cli_error)
+            .then(cli_completed);
+    }
 
     return { draw:      cli_draw
            , ask:       cli_ask
            , user_turn: cli_user_turn
            , completed: cli_completed
+           , game:      cli_game
+           , play:      cli_play
            };
 };
 

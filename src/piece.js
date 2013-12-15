@@ -7,11 +7,6 @@ function Piece (color, symbol) {
         return (piece.match_color(other) && piece.match_symbol(other));
     }
 
-    piece.toString = function () {
-        // implicitly depends on package 'colors'
-        return piece.symbol[piece.color];
-    }
-
     // piece.match_color :: Piece -> Boolean
     piece.match_color = function (other) {
         return (other.color == piece.color);

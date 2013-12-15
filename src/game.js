@@ -3,25 +3,14 @@ var Board = require('./board');
 var Matches = require('./matches');
 var Promise = require('promise');
 
-function Game () {
+function Game (tile_set) {
     var game = this;
     var turns = [];
 
-    var colors =
-        [ 'blue'
-        , 'cyan'
-        , 'green'
-        , 'magenta'
-        , 'red'
-        , 'yellow'
-        ];
-
-    var symbols = [ 'a', 'b', 'c', 'd', 'e', 'f' ];
-
     var all_pieces = (function () {
         var pieces = [];
-        colors.forEach(function (color) {
-            symbols.forEach(function (symbol) {
+        tile_set.colors.forEach(function (color) {
+            tile_set.symbols.forEach(function (symbol) {
                 pieces.push(new Piece(color, symbol));
             });
         });
@@ -45,8 +34,8 @@ function Game () {
     }
 
     var initial_pieces = (function () {
-        var shuffled_colors  = shuffle(colors);
-        var shuffled_symbols = shuffle(symbols);
+        var shuffled_colors  = shuffle(tile_set.colors);
+        var shuffled_symbols = shuffle(tile_set.symbols);
         return shuffled_colors.map(function (color, index) {
             return new Piece(color, shuffled_symbols[index]);
         });
