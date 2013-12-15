@@ -5,6 +5,10 @@ function Piece (color, symbol) {
     piece.color = color;
     piece.symbol = symbol;
 
+    piece.equal = function (other) {
+        return (piece.match_color(other) && piece.match_symbol(other));
+    }
+
     piece.toString = function () {
         // implicitly depends on package 'colors'
         return piece.symbol[piece.color];
@@ -146,16 +150,18 @@ function Game () {
     var game = this;
     var turns = [];
 
+    var colors =
+        [ 'blue'
+        , 'cyan'
+        , 'green'
+        , 'magenta'
+        , 'red'
+        , 'yellow'
+        ];
+
+    var symbols = [ 'a', 'b', 'c', 'd', 'e', 'f' ];
+
     var all_pieces = (function () {
-        var colors =
-            [ 'blue'
-            , 'cyan'
-            , 'green'
-            , 'magenta'
-            , 'red'
-            , 'yellow'
-            ];
-        var symbols = [ 'a', 'b', 'c', 'd', 'e', 'f' ];
         var pieces = [];
         colors.forEach(function (color) {
             symbols.forEach(function (symbol) {
@@ -164,6 +170,7 @@ function Game () {
         });
         return pieces.concat(pieces); // there's two of each
     })();
+
 
     /**
      * Randomize array element order in-place.
@@ -180,7 +187,22 @@ function Game () {
         return array;
     }
 
-    var pieces = shuffle(all_pieces);
+    var initial_pieces = (function () {
+        var shuffled_colors  = shuffle(colors);
+        var shuffled_symbols = shuffle(symbols);
+        return shuffled_colors.map(function (color, index) {
+            return new Piece(color, shuffled_symbols[index]);
+        });
+    })();
+
+    var pieces = initial_pieces.concat(
+        shuffle(all_pieces).filter(function (piece) {
+            return !initial_pieces.some(function (initial) {
+                return initial.equal(piece);
+            });
+        })
+    );
+
     var board = new Board;
 
     function put (x, y, piece) {
