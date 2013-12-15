@@ -70,7 +70,7 @@ function Board () {
         board.cells[flatten_xy(x, y)] = value;
     }
 
-
+    // implicitly depends on package 'colors'
     board.cli_draw = function () {
         var empty_cell_string = '☐';
         process.stdout.write('   '); // leave room for the y axis
