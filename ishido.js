@@ -348,7 +348,7 @@ function main (dependencies) {
 
 if (require.main === module) {
     main(
-        { colors: require('colors')
+        { colors:   require('colors')
         , readline: require('readline')
         }
     );
