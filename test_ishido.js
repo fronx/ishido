@@ -1,6 +1,8 @@
-var test = require('tape');
+var test    = require('tape');
 var Promise = require('promise');
-var ishido = require('./ishido');
+var Game    = require('./src/game');
+var Piece   = require('./src/piece');
+var Matches = require('./src/matches');
 
 function nothing () {}
 function rand_between (a, b) {
@@ -21,7 +23,7 @@ function test_turn (n_turn, piece, board) {
 //
 // test('play the whole game, randomly', function (t) {
 //     t.plan(1);
-//     (new ishido.Game)
+//     (new Game)
 //         .loop(test_turn, nothing)
 //         .then(function (game) {
 //             t.equal(game.completed(), true);
@@ -32,11 +34,11 @@ test('match interpretations', function (t) {
     t.plan(1);
     t.equal(
         JSON.stringify(
-            ishido.Matches.all(
-                new ishido.Piece('red', 'f')
-            ,   [ new ishido.Piece('red',    'f')
-                , new ishido.Piece('red',    'b')
-                , new ishido.Piece('yellow', 'f')
+            Matches.all(
+                new Piece('red', 'f')
+            ,   [ new Piece('red',    'f')
+                , new Piece('red',    'b')
+                , new Piece('yellow', 'f')
                 ]
             )
         )
@@ -51,11 +53,11 @@ test('grouped match counts', function (t) {
     t.plan(1);
     t.equal(
         JSON.stringify(
-            ishido.Matches.grouped_counts(
-                new ishido.Piece('red', 'f')
-            ,   [ new ishido.Piece('red',    'f')
-                , new ishido.Piece('red',    'b')
-                , new ishido.Piece('yellow', 'f')
+            Matches.grouped_counts(
+                new Piece('red', 'f')
+            ,   [ new Piece('red',    'f')
+                , new Piece('red',    'b')
+                , new Piece('yellow', 'f')
                 ]
             )
         )
@@ -69,18 +71,18 @@ test('grouped match counts', function (t) {
 test('satisfy match predicate', function (t) {
     t.plan(4);
     var neighbours =
-        [ new ishido.Piece('red',    'f')
-        , new ishido.Piece('red',    'b')
-        , new ishido.Piece('yellow', 'f')
+        [ new Piece('red',    'f')
+        , new Piece('red',    'b')
+        , new Piece('yellow', 'f')
         ];
     var bad_neighbours =
-        [ new ishido.Piece('yellow', 'b')
-        , new ishido.Piece('yellow', 'c')
+        [ new Piece('yellow', 'b')
+        , new Piece('yellow', 'c')
         ]
 
     t.equal(
-        ishido.Matches.satisfies(
-            new ishido.Piece('red', 'f')
+        Matches.satisfies(
+            new Piece('red', 'f')
         ,   neighbours
         ,   [ { 'color': 2, 'symbol': 1 }
             , { 'color': 1, 'symbol': 2 }
@@ -90,8 +92,8 @@ test('satisfy match predicate', function (t) {
     );
 
     t.equal(
-        ishido.Matches.satisfies(
-            new ishido.Piece('red', 'f')
+        Matches.satisfies(
+            new Piece('red', 'f')
         ,   neighbours
         ,   [ { 'color': 1, 'symbol': 1 } ]
         )
@@ -99,8 +101,8 @@ test('satisfy match predicate', function (t) {
     );
 
     t.equal(
-        ishido.Matches.satisfies(
-            new ishido.Piece('red', 'b')
+        Matches.satisfies(
+            new Piece('red', 'b')
         ,   neighbours
         ,   [ { 'symbol': 2 } ]
         )
@@ -108,8 +110,8 @@ test('satisfy match predicate', function (t) {
     );
 
     t.equal(
-        ishido.Matches.satisfies(
-            new ishido.Piece('red', 'f')
+        Matches.satisfies(
+            new Piece('red', 'f')
         ,   bad_neighbours
         ,   [ { 'color':  1 }
             , { 'symbol': 1 }
