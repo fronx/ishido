@@ -1,6 +1,4 @@
-var colors = require('colors');
 var Promise = require('promise');
-var readline = require('readline');
 
 function Piece (color, symbol) {
     var piece = this;
@@ -8,6 +6,7 @@ function Piece (color, symbol) {
     piece.symbol = symbol;
 
     piece.toString = function () {
+        // implicitly depends on package 'colors'
         return piece.symbol[piece.color];
     }
 
@@ -311,35 +310,35 @@ function Game () {
 }
 
 
-// cli_ask :: String -> Promise String
-function cli_ask (question) {
-    var rl = readline.createInterface({
-        input:  process.stdin,
-        output: process.stdout
-    });
-    return new Promise(function (resolve, reject) {
-        rl.question(question, function (answer) {
-            rl.close();
-            resolve(answer);
+function main (dependencies) {
+    // cli_ask :: Readline -> String -> Promise String
+    function cli_ask (question) {
+        var rl = dependencies.readline.createInterface({
+            input:  process.stdin,
+            output: process.stdout
         });
+        return new Promise(function (resolve, reject) {
+            rl.question(question, function (answer) {
+                rl.close();
+                resolve(answer);
+            });
 
-    });
-}
+        });
+    }
 
-// cli_user_turn :: Int -> Piece -> Board -> Promise Point
-function cli_user_turn (n_turn, piece, board) {
-    process.stdout.write("\n== turn " + n_turn + " ==\n\n");
-    board.cli_draw();
-    console.log("\ncurrent piece: " + piece.toString());
-    return cli_ask('x,y: ').then(function (input_string) {
-        xy = input_string.split(/\s*,\s*/);
-        return { x: parseInt(xy[0])
-               , y: parseInt(xy[1])
-               }
-    });
-}
+    // cli_user_turn :: Int -> Piece -> Board -> Promise Point
+    function cli_user_turn (n_turn, piece, board) {
+        process.stdout.write("\n== turn " + n_turn + " ==\n\n");
+        board.cli_draw();
+        console.log("\ncurrent piece: " + piece.toString());
+        return cli_ask('x,y: ').then(function (input_string) {
+            xy = input_string.split(/\s*,\s*/);
+            return { x: parseInt(xy[0])
+                   , y: parseInt(xy[1])
+                   }
+        });
+    }
 
-function main () {
     (new Game)
         .loop(cli_user_turn, console.log)
         .then(function (game) {
@@ -348,7 +347,11 @@ function main () {
 }
 
 if (require.main === module) {
-    main();
+    main(
+        { colors: require('colors')
+        , readline: require('readline')
+        }
+    );
 } else {
     module.exports.Piece   = Piece;
     module.exports.Board   = Board;
