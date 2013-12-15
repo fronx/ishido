@@ -11,7 +11,7 @@ function test_turn (n_turn, piece, board) {
   return new Promise(function (resolve, reject) {
     resolve({ x: rand_between(board.x_min, board.x_max)
             , y: rand_between(board.y_min, board.y_max)
-            })
+            });
   });
 }
 
@@ -21,6 +21,6 @@ test('play the whole game, randomly', function (t) {
     (new ishido.Game)
         .loop(test_turn, nothing)
         .then(function (game) {
-            t.equal(true, game.completed())
+            t.equal(true, game.completed());
         });
 });
