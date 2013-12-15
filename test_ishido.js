@@ -67,12 +67,16 @@ test('grouped match counts', function (t) {
 });
 
 test('satisfy match predicate', function (t) {
-    t.plan(3);
+    t.plan(4);
     var neighbours =
         [ new ishido.Piece('red',    'f')
         , new ishido.Piece('red',    'b')
         , new ishido.Piece('yellow', 'f')
         ];
+    var bad_neighbours =
+        [ new ishido.Piece('yellow', 'b')
+        , new ishido.Piece('yellow', 'c')
+        ]
 
     t.equal(
         ishido.Matches.satisfies(
@@ -99,6 +103,17 @@ test('satisfy match predicate', function (t) {
             new ishido.Piece('red', 'b')
         ,   neighbours
         ,   [ { 'symbol': 2 } ]
+        )
+    ,   false
+    );
+
+    t.equal(
+        ishido.Matches.satisfies(
+            new ishido.Piece('red', 'f')
+        ,   bad_neighbours
+        ,   [ { 'color':  1 }
+            , { 'symbol': 1 }
+            ]
         )
     ,   false
     );
