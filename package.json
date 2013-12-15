@@ -5,7 +5,7 @@
   "main": "ishido.js",
   "scripts": {
     "start": "npm install && ./bin/ishido_cli.js",
-    "test": "node_modules/tape/bin/tape test/*.js"
+    "test": "node_modules/tape/bin/tape test/test_*.js"
   },
   "repository": {
     "type": "git",
