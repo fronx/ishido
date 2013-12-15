@@ -216,12 +216,6 @@ function Game () {
         board.set(x, y, piece);
     }
 
-    function put_initial_pieces () {
-        board.start_positions.forEach(function (point) {
-            put(point.x, point.y, pieces.shift());
-        });
-    }
-
     // matching :: Piece -> [ Piece ] -> Boolean
     function matching(piece, neighbours) {
         if (neighbours.length == 0)
@@ -304,6 +298,12 @@ function Game () {
                 resolve(game);
             });
         }
+    }
+
+    function put_initial_pieces () {
+        board.start_positions.forEach(function (point) {
+            put(point.x, point.y, pieces.shift());
+        });
     }
 
     put_initial_pieces();
