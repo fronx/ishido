@@ -2,7 +2,7 @@ var colors = require('colors');
 var Promise = require('promise');
 var readline = require('readline');
 
-var Piece = function (color, symbol) {
+function Piece (color, symbol) {
     var piece = this;
     piece.color = color;
     piece.symbol = symbol;
@@ -20,9 +20,17 @@ var Piece = function (color, symbol) {
     piece.match_symbol = function (other) {
         return (other.symbol == piece.symbol);
     }
+
+    // piece.matching :: Piece -> [ String ]
+    piece.matching = function (other) {
+        var result = [];
+        if (piece.match_color(other))  result.push('color');
+        if (piece.match_symbol(other)) result.push('symbol');
+        return result;
+    }
 }
 
-var Board = function () {
+function Board () {
     var board = this;
     board.cells = [];
     board.y_min = board.x_min = 1;
@@ -66,12 +74,27 @@ var Board = function () {
 
     board.cli_draw = function () {
         var empty_cell_string = '☐';
-        for (i = 0; i < n_fields; i++) {
-            if ((i > 0) && (i % board.x_num == 0)) process.stdout.write("\n");
-            if (board.cells[i] instanceof Piece)
-                process.stdout.write(board.cells[i].toString())
+        process.stdout.write('   '); // leave room for the y axis
+        for (var x = 1; x <= board.x_max; x++) {
+            if (x < 10)
+                process.stdout.write(' ' + x + ' ')
             else
-                process.stdout.write(empty_cell_string);
+                process.stdout.write('' + x + ' ');
+        }
+        process.stdout.write("\n");
+        for (var i = 0; i < n_fields; i++) {
+            if (i % board.x_num == 0) {
+                if (i > 0) process.stdout.write("\n");
+                var y = (i / board.x_num) + 1;
+                if (y < 10)
+                    process.stdout.write(' ' + y + ' ')
+                else
+                    process.stdout.write('' + y + ' ');
+            }
+            if (board.cells[i] instanceof Piece)
+                process.stdout.write(' ' + board.cells[i].toString() + ' ')
+            else
+                process.stdout.write(' ' + empty_cell_string + ' ');
         }
         process.stdout.write("\n");
     }
@@ -85,7 +108,63 @@ var Board = function () {
     }
 }
 
-var Game = function () {
+function a_concat_b (a, b) { return a.concat(b); }
+
+function cartesian_product (arrays) {
+    return arrays.reduce(function (as, bs) {
+        return as.map(function (a) {
+                   return bs.map(function (b) {
+                       return a.concat([ b ]);
+                   });
+               }).reduce(a_concat_b);
+    }, [ [] ]);
+};
+
+Matches = (function () {
+    // all :: Piece -> [ Piece ] -> [ [String] ]
+    function all (piece, pieces) {
+        return cartesian_product(
+            pieces.map(function (p) {
+                return p.matching(piece);
+            })
+        );
+    }
+
+    // grouped_counts :: Piece -> [ Piece ] -> [ Object String Integer ]
+    function grouped_counts (piece, pieces) {
+        return all(piece, pieces).map(function (matches) {
+            // matches :: [String]
+            return matches.reduce(function (acc, match) {
+                // match :: String
+                acc[match] = acc[match] + 1;
+                return acc;
+            }, { 'color': 0, 'symbol': 0 });
+        });
+    }
+
+    function satisfies (piece, pieces, predicates) {
+        return grouped_counts(piece, pieces).some(function (grouped) {
+            return predicates.some(function (pred_grouped) {
+                var satisfied = true;
+                [ 'color', 'symbol' ].forEach(function (match) {
+                    if (pred_grouped[match]) {
+                        if (grouped[match])
+                            satisfied = satisfied && (pred_grouped[match] >= grouped[match])
+                        else
+                            satisfied = false;
+                    }
+                });
+                return satisfied;
+            });
+        });
+    }
+    return { all:            all
+           , grouped_counts: grouped_counts
+           , satisfies:      satisfies
+           };
+})();
+
+function Game () {
     var game = this;
     var turns = [];
 
@@ -97,23 +176,14 @@ var Game = function () {
             , 'magenta'
             , 'red'
             , 'yellow'
-            ]
-
-        var symbols =
-            [ 'a'
-            , 'b'
-            , 'c'
-            , 'd'
-            , 'e'
-            , 'f'
-            ]
-
-        var pieces = []
+            ];
+        var symbols = [ 'a', 'b', 'c', 'd', 'e', 'f' ];
+        var pieces = [];
         colors.forEach(function (color) {
             symbols.forEach(function (symbol) {
                 pieces.push(new Piece(color, symbol));
-            })
-        })
+            });
+        });
         return pieces.concat(pieces); // there's two of each
     })();
 
@@ -146,9 +216,35 @@ var Game = function () {
         });
     }
 
+    // matching :: Piece -> [ Piece ] -> Boolean
     function matching(piece, neighbours) {
-        // TODO
-        return true;
+        if (neighbours.length == 0)
+            return false;
+        if (neighbours.length == 1) {
+            return Matches.satisfies(piece, neighbours,
+                [ { 'color':  1 }
+                , { 'symbol': 1 }
+                ]
+            );
+        }
+        if (neighbours.length == 2) {
+            return Matches.satisfies(piece, neighbours,
+                [ { 'color': 1, 'symbol': 1 } ]
+            );
+        }
+        if (neighbours.length == 3) {
+            return Matches.satisfies(piece, neighbours,
+                [ { 'color': 1, 'symbol': 2 }
+                , { 'color': 2, 'symbol': 1 }
+                ]
+            );
+        }
+        if (neighbours.length == 4) {
+            return Matches.satisfies(piece, neighbours,
+                [ { 'color': 2, 'symbol': 2 } ]
+            );
+        }
+        console.log("Something's up with the matching.");
     }
 
     function valid_placing (x, y, piece) {
@@ -247,6 +343,8 @@ function main () {
 if (require.main === module) {
     main();
 } else {
-    module.exports.Board = Board;
-    module.exports.Game  = Game;
+    module.exports.Piece   = Piece;
+    module.exports.Board   = Board;
+    module.exports.Game    = Game;
+    module.exports.Matches = Matches;
 }
