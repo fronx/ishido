@@ -72,28 +72,38 @@ function Board () {
 
     // implicitly depends on package 'colors'
     board.cli_draw = function () {
-        var empty_cell_string = '☐';
-        process.stdout.write('   '); // leave room for the y axis
-        for (var x = 1; x <= board.x_max; x++) {
-            if (x < 10)
-                process.stdout.write(' ' + x + ' ')
+        function draw_num_cell (num) {
+            if (num < 10)
+                process.stdout.write(' ' + num + ' ')
             else
-                process.stdout.write('' + x + ' ');
+                process.stdout.write('' + num + ' ');
         }
-        process.stdout.write("\n");
+
+        function draw_char_cell (char) {
+            process.stdout.write(' ' + char + ' ');
+        }
+
+        function draw_x_axis () {
+            process.stdout.write('   '); // leave room for the y axis
+            for (var x = 1; x <= board.x_max; x++)
+                draw_num_cell(x);
+            process.stdout.write("\n");
+        }
+
+        var empty_cell_char = '☐';
+        draw_x_axis();
+
         for (var i = 0; i < n_fields; i++) {
             if (i % board.x_num == 0) {
-                if (i > 0) process.stdout.write("\n");
+                if (i > 0) process.stdout.write("\n"); // end of row
+                // y-axis
                 var y = (i / board.x_num) + 1;
-                if (y < 10)
-                    process.stdout.write(' ' + y + ' ')
-                else
-                    process.stdout.write('' + y + ' ');
+                draw_num_cell(y);
             }
             if (board.cells[i] instanceof Piece)
-                process.stdout.write(' ' + board.cells[i].toString() + ' ')
+                draw_char_cell(board.cells[i].toString())
             else
-                process.stdout.write(' ' + empty_cell_string + ' ');
+                draw_char_cell(empty_cell_char);
         }
         process.stdout.write("\n");
     }
