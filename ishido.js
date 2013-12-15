@@ -110,24 +110,28 @@ function Board () {
 
 function a_concat_b (a, b) { return a.concat(b); }
 
+// cartesian_product :: [ [a] ] -> [ [a] ]
 function cartesian_product (arrays) {
     return arrays.reduce(function (as, bs) {
-        return as.map(function (a) {
-                   return bs.map(function (b) {
-                       return a.concat([ b ]);
-                   });
-               }).reduce(a_concat_b);
+        if (as.length == 0) // :( is there a better way?
+            as = [ [] ];
+        return (
+            as.map(function (a) {
+               return bs.map(function (b) {
+                   return a.concat([ b ]);
+               });
+            }).reduce(a_concat_b)
+        );
     }, [ [] ]);
 };
 
 Matches = (function () {
     // all :: Piece -> [ Piece ] -> [ [String] ]
     function all (piece, pieces) {
-        return cartesian_product(
-            pieces.map(function (p) {
-                return p.matching(piece);
-            })
-        );
+        var matches = pieces.map(function (p) {
+            return p.matching(piece);
+        });
+        return cartesian_product(matches);
     }
 
     // grouped_counts :: Piece -> [ Piece ] -> [ Object String Integer ]
@@ -142,16 +146,19 @@ Matches = (function () {
         });
     }
 
+    // satisfies :: Piece -> [ Piece ] -> [ Object String Integer ] -> Boolean
     function satisfies (piece, pieces, predicates) {
         return grouped_counts(piece, pieces).some(function (grouped) {
             return predicates.some(function (pred_grouped) {
                 var satisfied = true;
                 [ 'color', 'symbol' ].forEach(function (match) {
+                    // match :: String
                     if (pred_grouped[match]) {
-                        if (grouped[match])
-                            satisfied = satisfied && (pred_grouped[match] >= grouped[match])
-                        else
+                        if (grouped[match]) {
+                            satisfied = satisfied && (grouped[match] >= pred_grouped[match])
+                        } else {
                             satisfied = false;
+                        }
                     }
                 });
                 return satisfied;

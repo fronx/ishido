@@ -89,7 +89,7 @@ test('satisfy match predicate', function (t) {
         ishido.Matches.satisfies(
             new ishido.Piece('red', 'f')
         ,   neighbours
-        ,   [ { 'color': 2, 'symbol': 2 } ]
+        ,   [ { 'color': 1, 'symbol': 1 } ]
         )
     ,   true
     );
