@@ -311,7 +311,7 @@ function Game () {
 
 
 function main (dependencies) {
-    // cli_ask :: Readline -> String -> Promise String
+    // cli_ask :: String -> Promise String
     function cli_ask (question) {
         var rl = dependencies.readline.createInterface({
             input:  process.stdin,
