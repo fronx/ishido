@@ -344,7 +344,7 @@ function Cli (dependencies) {
     function cli_user_turn (n_turn, piece, board) {
         print("\n== turn " + n_turn + " ==\n\n");
         cli_draw(board);
-        console.log("\ncurrent piece: " + piece.toString());
+        print("\ncurrent piece: " + piece.toString() + "\n");
         return cli_ask('x,y: ').then(function (input_string) {
             xy = input_string.split(/\s*,\s*/);
             return { x: parseInt(xy[0])
@@ -354,7 +354,7 @@ function Cli (dependencies) {
     }
 
     function cli_completed (game) {
-        console.log("COMPLETED");
+        print("COMPLETED\n");
     };
 
     return { draw:      cli_draw
