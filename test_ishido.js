@@ -81,7 +81,7 @@ test('satisfy match predicate', function (t) {
         ]
 
     t.equal(
-        Matches.satisfies(
+        Matches.satisfy(
             new Piece('red', 'f')
         ,   neighbours
         ,   [ { 'color': 2, 'symbol': 1 }
@@ -92,7 +92,7 @@ test('satisfy match predicate', function (t) {
     );
 
     t.equal(
-        Matches.satisfies(
+        Matches.satisfy(
             new Piece('red', 'f')
         ,   neighbours
         ,   [ { 'color': 1, 'symbol': 1 } ]
@@ -101,7 +101,7 @@ test('satisfy match predicate', function (t) {
     );
 
     t.equal(
-        Matches.satisfies(
+        Matches.satisfy(
             new Piece('red', 'b')
         ,   neighbours
         ,   [ { 'symbol': 2 } ]
@@ -110,7 +110,7 @@ test('satisfy match predicate', function (t) {
     );
 
     t.equal(
-        Matches.satisfies(
+        Matches.satisfy(
             new Piece('red', 'f')
         ,   bad_neighbours
         ,   [ { 'color':  1 }

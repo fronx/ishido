@@ -1,19 +1,4 @@
-function a_concat_b (a, b) { return a.concat(b); }
-
-// cartesian_product :: [ [a] ] -> [ [a] ]
-function cartesian_product (arrays) {
-    return arrays.reduce(function (as, bs) {
-        if (as.length == 0) // :( is there a better way?
-            as = [ [] ];
-        return (
-            as.map(function (a) {
-               return bs.map(function (b) {
-                   return a.concat([ b ]);
-               });
-            }).reduce(a_concat_b)
-        );
-    }, [ [] ]);
-};
+var Util = require('./util');
 
 Matches = (function () {
     var MATCH_CONDITION = {
@@ -28,7 +13,7 @@ Matches = (function () {
         var matches = pieces.map(function (p) {
             return p.matching(piece);
         });
-        return cartesian_product(matches);
+        return Util.cartesian_product(matches);
     }
 
     // grouped_counts :: Piece -> [ Piece ] -> [ Object String Integer ]
@@ -43,19 +28,18 @@ Matches = (function () {
         });
     }
 
-    // satisfies :: Piece -> [ Piece ] -> Boolean
-    function satisfies (piece, pieces) {
+    // satisfy :: Piece -> [ Piece ] -> Boolean
+    function satisfy (piece, pieces) {
         if (pieces.length == 0)
             return false;
 
-        if (pieces.length > 4){
-            throw new Error('Something\'s up with "satisfies"');
-        }
+        if (pieces.length > 4)
+            throw new Error('Something\'s up with "satisfy"');
 
-        var predicates = MATCH_CONDITION[pieces.length];
+        var match_condition = MATCH_CONDITION[pieces.length];
 
         return grouped_counts(piece, pieces).some(function (grouped) {
-            return predicates.some(function (pred_grouped) {
+            return match_condition.some(function (pred_grouped) {
                 var satisfied = true;
                 [ 'color', 'symbol' ].forEach(function (match) {
                     if (pred_grouped[match]) {
@@ -72,7 +56,7 @@ Matches = (function () {
     }
     return { all:            all
            , grouped_counts: grouped_counts
-           , satisfies:      satisfies
+           , satisfy:        satisfy
            };
 })();
 
