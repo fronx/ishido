@@ -113,7 +113,7 @@ Matches = (function () {
                 // match :: String
                 acc[match] = acc[match] + 1;
                 return acc;
-            }, { 'color': 0, 'symbol': 0 });
+            }, { color: 0, symbol: 0 });
         });
     }
 
@@ -194,26 +194,26 @@ function Game () {
             return false;
         if (neighbours.length == 1) {
             return Matches.satisfies(piece, neighbours,
-                [ { 'color':  1 }
-                , { 'symbol': 1 }
+                [ { color:  1 }
+                , { symbol: 1 }
                 ]
             );
         }
         if (neighbours.length == 2) {
             return Matches.satisfies(piece, neighbours,
-                [ { 'color': 1, 'symbol': 1 } ]
+                [ { color: 1, symbol: 1 } ]
             );
         }
         if (neighbours.length == 3) {
             return Matches.satisfies(piece, neighbours,
-                [ { 'color': 1, 'symbol': 2 }
-                , { 'color': 2, 'symbol': 1 }
+                [ { color: 1, symbol: 2 }
+                , { color: 2, symbol: 1 }
                 ]
             );
         }
         if (neighbours.length == 4) {
             return Matches.satisfies(piece, neighbours,
-                [ { 'color': 2, 'symbol': 2 } ]
+                [ { color: 2, symbol: 2 } ]
             );
         }
         console.log("Something's up with the matching.");
