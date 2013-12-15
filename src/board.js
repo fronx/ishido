@@ -49,6 +49,7 @@ function Board () {
                ].filter(function (cell) { return cell != null })
     }
 
+    // board.each_cell :: (Maybe Piece -> Integer) -> Void
     board.each_cell = function (fn) {
         for (var i = 0; i < board.n_fields; i++) {
             fn(board.cells[i], i);
