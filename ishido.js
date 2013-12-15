@@ -101,6 +101,14 @@ function cartesian_product (arrays) {
 };
 
 Matches = (function () {
+
+    var MATCH_CONDITION = {
+        '1': [{ color: 1 }, { symbol: 1 }],
+        '2': [{ color: 1, symbol: 1 }],
+        '3': [{ color: 1, symbol: 2 }, { color: 2, symbol: 1 }],
+        '4': [{ color: 2, symbol: 2 }]
+    };
+
     // all :: Piece -> [ Piece ] -> [ [String] ]
     function all (piece, pieces) {
         var matches = pieces.map(function (p) {
@@ -121,13 +129,21 @@ Matches = (function () {
         });
     }
 
-    // satisfies :: Piece -> [ Piece ] -> [ Object String Integer ] -> Boolean
-    function satisfies (piece, pieces, predicates) {
+    // satisfies :: Piece -> [ Piece ] -> Boolean
+    function satisfies (piece, pieces) {
+        if (pieces.length == 0)
+            return false;
+
+        if (pieces.length > 4){
+            throw new Error('Something\'s up with "satisfies"');
+        }
+
+        var predicates = MATCH_CONDITION[pieces.length];
+
         return grouped_counts(piece, pieces).some(function (grouped) {
             return predicates.some(function (pred_grouped) {
                 var satisfied = true;
                 [ 'color', 'symbol' ].forEach(function (match) {
-                    // match :: String
                     if (pred_grouped[match]) {
                         if (grouped[match]) {
                             satisfied = satisfied && (grouped[match] >= pred_grouped[match])
@@ -210,41 +226,10 @@ function Game () {
         board.set(x, y, piece);
     }
 
-    // matching :: Piece -> [ Piece ] -> Boolean
-    function matching(piece, neighbours) {
-        if (neighbours.length == 0)
-            return false;
-        if (neighbours.length == 1) {
-            return Matches.satisfies(piece, neighbours,
-                [ { color:  1 }
-                , { symbol: 1 }
-                ]
-            );
-        }
-        if (neighbours.length == 2) {
-            return Matches.satisfies(piece, neighbours,
-                [ { color: 1, symbol: 1 } ]
-            );
-        }
-        if (neighbours.length == 3) {
-            return Matches.satisfies(piece, neighbours,
-                [ { color: 1, symbol: 2 }
-                , { color: 2, symbol: 1 }
-                ]
-            );
-        }
-        if (neighbours.length == 4) {
-            return Matches.satisfies(piece, neighbours,
-                [ { color: 2, symbol: 2 } ]
-            );
-        }
-        console.log("Something's up with the matching.");
-    }
-
     function valid_placing (x, y, piece) {
         return board.valid_xy(x, y) &&
                board.free(x, y) &&
-               matching(piece, board.neighbours(x, y));
+               Matches.satisfies(piece, board.neighbours(x, y));
     }
 
     function turn () {
