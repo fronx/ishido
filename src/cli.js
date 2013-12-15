@@ -1,10 +1,11 @@
 require('colors');
-var Promise = require('promise');
-var Piece   = require('./piece');
-var TileSet = require('./tile_set');
-var Game    = require('./game');
+var Promise  = require('promise');
+var readline = require('readline')
+var Piece    = require('./piece');
+var TileSet  = require('./tile_set');
+var Game     = require('./game');
 
-function Cli (dependencies) {
+function Cli () {
     function print (x) {
         process.stdout.write(x);
     };
@@ -54,7 +55,7 @@ function Cli (dependencies) {
 
     // cli_ask :: String -> Promise String
     function cli_ask (question) {
-        var rl = dependencies.readline.createInterface({
+        var rl = readline.createInterface({
             input:  process.stdin,
             output: process.stdout
         });
