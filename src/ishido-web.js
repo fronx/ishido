@@ -52,9 +52,9 @@ window.Ishido = function (element) {
     function elem_at(x, y) {
         return row_elem(y).children[x - 1];
     }
-    function refresh (x, y, board) {
+    function refresh (cell, x, y) {
         var elem = elem_at(x, y);
-        set_piece(elem, board.at(x, y));
+        set_piece(elem, cell);
     }
     function initial_render (board) {
         element.innerHTML = '';
@@ -73,9 +73,7 @@ window.Ishido = function (element) {
     }
     function draw (board, current_piece) {
         initial_render(board);
-        board.each_cell(function (cell, x, y) {
-            refresh(x, y, board);
-        });
+        board.each_cell(refresh);
     }
     // user_turn :: Int -> Piece -> Board -> Promise Point
     function user_turn (n_turn, piece, board) {
