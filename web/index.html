@@ -4,7 +4,13 @@
   <script src="js/ishido-web.js"></script>
   <style>
     .ishido-board, .ishido-current-piece { display: inline-block; }
-    .ishido-cell { display: inline-block; width: 25px; height: 25px; border: 1px solid #eee; }
+    .ishido-cell {
+      display: inline-block;
+      width: 25px; height: 25px;
+      border: 1px solid #ccc;
+      position: relative;
+    }
+    .ishido-cell:after { position: absolute; line-height: 25px; width: 25px; text-align: center; }
     .ishido-current-piece { margin-left: 100px; vertical-align: top; }
     .ishido-color-c1 { background-color: #1f77b4; }
     .ishido-color-c2 { background-color: #ff7f0e; }
@@ -12,12 +18,12 @@
     .ishido-color-c4 { background-color: #d62728; }
     .ishido-color-c5 { background-color: #9467bd; }
     .ishido-color-c6 { background-color: #8c564b; }
-    .ishido-symbol-s1:after { content: 's1'; }
-    .ishido-symbol-s2:after { content: 's2'; }
-    .ishido-symbol-s3:after { content: 's3'; }
-    .ishido-symbol-s4:after { content: 's4'; }
-    .ishido-symbol-s5:after { content: 's5'; }
-    .ishido-symbol-s6:after { content: 's6'; }
+    .ishido-symbol-s1:after { content: 'a'; }
+    .ishido-symbol-s2:after { content: 'b'; }
+    .ishido-symbol-s3:after { content: 'c'; }
+    .ishido-symbol-s4:after { content: 'd'; }
+    .ishido-symbol-s5:after { content: 'e'; }
+    .ishido-symbol-s6:after { content: 'f'; }
   </style>
 </head>
 <body>
