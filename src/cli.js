@@ -28,11 +28,9 @@ function Cli () {
 
         draw_x_axis();
 
-        board.each_cell(function (cell, index) {
-            if (index % board.x_num == 0) {
-                if (index > 0) print("\n"); // end of row
-                // y-axis
-                var y = (index / board.x_num) + 1;
+        board.each_cell(function (cell, x, y) {
+            if (x == 1) {
+                if (y > 1) print("\n"); // end of row
                 draw_num_cell(y);
             }
             draw_char_cell(piece_as_char(cell));

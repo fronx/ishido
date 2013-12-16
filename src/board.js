@@ -22,6 +22,12 @@ function Board () {
         return (y - board.y_min) * board.x_num + (x - board.x_min);
     }
 
+    function index_to_xy (index) {
+        return { x: (index % board.x_num) + board.x_min
+               , y: Math.floor(index / board.x_num) + board.y_min
+               };
+    }
+
     board.valid_xy = function (x, y) {
         return (x >= board.x_min) && (x <= board.x_max) && (y >= board.y_min) && (y <= board.y_max);
     }
@@ -49,10 +55,12 @@ function Board () {
                ].filter(function (cell) { return cell != null })
     }
 
-    // board.each_cell :: (Maybe Piece -> Integer) -> Void
+    // board.each_cell :: (Maybe Piece -> Integer -> Integer) -> Void
     board.each_cell = function (fn) {
+        var point;
         for (var i = 0; i < board.n_fields; i++) {
-            fn(board.cells[i], i);
+            point = index_to_xy(i);
+            fn(board.cells[i], point.x, point.y);
         }
     }
 }

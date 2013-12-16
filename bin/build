@@ -1,0 +1,3 @@
+#!/bin/bash
+
+browserify src/ishido-web.js -o web/js/ishido-web.js
