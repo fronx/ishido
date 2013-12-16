@@ -3,19 +3,21 @@
   <title>ishido</title>
   <script src="js/ishido-web.js"></script>
   <style>
+    .ishido-board, .ishido-current-piece { display: inline-block; }
     .ishido-cell { display: inline-block; width: 25px; height: 25px; border: 1px solid #eee; }
+    .ishido-current-piece { margin-left: 100px; vertical-align: top; }
     .ishido-color-c1 { background-color: #1f77b4; }
     .ishido-color-c2 { background-color: #ff7f0e; }
     .ishido-color-c3 { background-color: #2ca02c; }
     .ishido-color-c4 { background-color: #d62728; }
     .ishido-color-c5 { background-color: #9467bd; }
     .ishido-color-c6 { background-color: #8c564b; }
-    .ishido-symbol-s1:before { content: 's1'; }
-    .ishido-symbol-s2:before { content: 's2'; }
-    .ishido-symbol-s3:before { content: 's3'; }
-    .ishido-symbol-s4:before { content: 's4'; }
-    .ishido-symbol-s5:before { content: 's5'; }
-    .ishido-symbol-s6:before { content: 's6'; }
+    .ishido-symbol-s1:after { content: 's1'; }
+    .ishido-symbol-s2:after { content: 's2'; }
+    .ishido-symbol-s3:after { content: 's3'; }
+    .ishido-symbol-s4:after { content: 's4'; }
+    .ishido-symbol-s5:after { content: 's5'; }
+    .ishido-symbol-s6:after { content: 's6'; }
   </style>
 </head>
 <body>

@@ -7,6 +7,7 @@ window.Ishido = function (element) {
         );
 
     var game = new ishido.Game(tile_set);
+    var initialized = false;
 
     function make_elem (tag, css_class) {
         var elem = document.createElement(tag);
@@ -45,9 +46,15 @@ window.Ishido = function (element) {
             });
         }
     }
+    function board_elem () {
+        return element.children[0];
+    }
+    function current_piece_elem () {
+        return element.children[1];
+    }
     // n starts at 1
     function row_elem(n) {
-        return element.children[n - 1];
+        return board_elem().children[n - 1];
     }
     function elem_at(x, y) {
         return row_elem(y).children[x - 1];
@@ -59,20 +66,24 @@ window.Ishido = function (element) {
     function initial_render (board) {
         element.innerHTML = '';
         var row;
+        var board_elem = element.appendChild(make_elem('div', 'ishido-board'));
+        element.appendChild(make_elem('div', 'ishido-cell ishido-current-piece'));
         board.each_cell(function (cell, x, y) {
             if (x == 1) {
-                if (row) element.appendChild(row);
+                if (row) board_elem.appendChild(row);
                 row = make_row();
             }
             row.appendChild(make_cell(cell));
         });
-        element.appendChild(row);
+        board_elem.appendChild(row);
+        initialized = true;
     }
     function completed () {
         console.log('completed.');
     }
     function draw (board, current_piece) {
-        initial_render(board);
+        if (!initialized) initial_render(board);
+        set_piece(current_piece_elem(), current_piece);
         board.each_cell(refresh);
     }
     // user_turn :: Int -> Piece -> Board -> Promise Point
@@ -82,12 +93,12 @@ window.Ishido = function (element) {
         console.log('piece', piece);
         draw(board, piece);
         return new ishido.Promise(function (resolve, reject) {
-            resolve({ x: 1, y: 1});
+            // resolve({ x: 1, y: 1});
         });
     }
     function play () {
         return game
-            .loop(user_turn, console.log)
+            .loop(user_turn, function (msg) { console.log(msg); })
             .then(completed);
     }
 
